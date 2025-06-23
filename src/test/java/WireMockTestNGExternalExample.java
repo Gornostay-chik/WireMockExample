@@ -28,6 +28,7 @@ public class WireMockTestNGExternalExample {
     @BeforeClass
     public void setUp() {
         // Настраиваем клиент WireMock для подключения к уже запущенному серверу
+        // sudo docker run -it --rm   -p 8181:8080   --name wiremock   wiremock/wiremock:3.13.0
         configureFor(host, port);
     }
 
@@ -35,8 +36,8 @@ public class WireMockTestNGExternalExample {
     public void tearDown() {
         // После каждого теста очищаем все запросы и заглушки,
         // чтобы не было влияния одного теста на другой.
-      //  resetAllRequests();
-      //  removeAllMappings();
+        resetAllRequests();
+        removeAllMappings();
     }
 
     @Test
@@ -139,8 +140,6 @@ curl -X POST "http://localhost:8181/complex/endpoint?queryParam1=value1&param2=1
 
         String pathURL = "/some/json";
 
-        // Регистрируем заглушку: для GET-запроса на URL "/some/thing"
-        // вернём ответ с заголовком "Content-Type: text/plain" и телом "Hello world!".
         stubFor(get(urlEqualTo(pathURL))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
@@ -193,8 +192,6 @@ curl -X POST "http://localhost:8181/complex/endpoint?queryParam1=value1&param2=1
         // Base URL for the API
         String pathURL = "/some/jsonarray";
 
-        // Регистрируем заглушку: для GET-запроса на URL "/some/thing"
-        // вернём ответ с заголовком "Content-Type: text/plain" и телом "Hello world!".
         stubFor(get(urlEqualTo(pathURL))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
