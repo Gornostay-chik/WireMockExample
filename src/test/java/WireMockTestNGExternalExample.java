@@ -36,78 +36,13 @@ public class WireMockTestNGExternalExample {
     }
 
     @Test
-    public void exactUrlOnlyTestNG() {
+    public void textMinStub() {
         // Регистрируем заглушку: для GET-запроса на URL "/some/thing"
         // вернём ответ с заголовком "Content-Type: text/plain" и телом "Hello world!".
         stubFor(get(urlEqualTo("/some/thing"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "text/plain")
                         .withBody("Hello world!")));
-
-        stubFor(post(urlPathEqualTo("/complex/endpoint"))
-                // --------------------------
-                // Условия сопоставления запроса (request matching):
-                // --------------------------
-                // Сопоставление URL: метод выбирает только путь (без учета query string)
-                // Использование urlPathEqualTo позволяет сравнивать часть пути без параметров.
-
-                // Сопоставление параметров запроса: проверяет, что query parameter "queryParam1" равен "value1"
-                .withQueryParam("queryParam1", equalTo("value1"))
-
-                // Сопоставление заголовков: например, заголовок "X-Request-Header" должен содержать строку, удовлетворяющую регулярному выражению
-                .withHeader("X-Request-Header", matching("HeaderValue-.*"))
-
-                // Сопоставление cookies: cookie с именем "sessionId" должна иметь значение "abc123"
-                .withCookie("sessionId", equalTo("abc123"))
-
-                // Аутентификация: базовая авторизация с заданными логином и паролем
-                .withBasicAuth("admin", "secret")
-
-                // Сопоставление тела запроса: например, JSON, в котором по пути $.data.id ожидается значение "12345"
-                .withRequestBody(matchingJsonPath("$.data.id", equalTo("12345")))
-
-                // --------------------------
-                // Определение ответа (response definition):
-                // --------------------------
-                .willReturn(aResponse()
-                        // HTTP статус ответа – например, 201 (Created)
-                        .withStatus(201)
-
-                        // Текстовое сообщение статуса (не всегда используется, но может быть полезно)
-                        .withStatusMessage("Created")
-
-                        // Заголовки ответа
-                        .withHeader("Content-Type", "application/json")
-                        .withHeader("X-Response-Header", "SomeValue")
-
-                        // Тело ответа можно задать напрямую – здесь возвращается JSON-строка
-                        .withBody("{ \"result\": \"success\", \"message\": \"Resource created successfully\" }")
-                        // Альтернативно, можно задать тело из файла:
-                        // .withBodyFile("response.json")
-
-                        // Задержка перед отправкой ответа (в миллисекундах) для имитации сетевой задержки
-                        .withFixedDelay(500)
-
-                        // Если требуется динамическая трансформация ответа, можно указать трансформеры
-                        .withTransformers("response-template")
-
-                        // Передача параметров в трансформер (например, для вставки динамических значений)
-                        .withTransformerParameter("timestamp", "2025-06-05T14:15:00Z")
-                )
-        );
-
-        /*
-
-curl -X POST "http://localhost:8181/complex/endpoint?queryParam1=value1&param2=123" \
-  -H "Content-Type: application/json" \
-  -H "X-Request-Header: HeaderValue-Test" \
-  -u admin:secret \
-  --cookie "sessionId=abc123" \
-  -d '{"data":{"id":12345}}'
-
-
-
-         */
 
         // Отправляем запросы через RestAssured на уже запущенный WireMock-сервер.
         int statusValid = RestAssured.get("http://localhost:8181/some/thing").getStatusCode();
@@ -119,13 +54,124 @@ curl -X POST "http://localhost:8181/complex/endpoint?queryParam1=value1&param2=1
     }
 
     @Test
-    public void exactUrlOnlyTestNGv2() throws IOException, InterruptedException {
+
+    public void jsonMaxStub () {
+
+
+        stubFor(post(urlPathEqualTo("/complex/endpoint"))
+                // --------------------------
+                // Условия сопоставления запроса (request matching):
+                // --------------------------
+                // Сопоставление URL: метод выбирает только путь (без учета query string)
+                // Использование urlPathEqualTo позволяет сравнивать часть пути без параметров.
+                // Сопоставление параметров запроса: проверяет, что query parameter "queryParam1" равен "value1"
+                .withQueryParam("queryParam1", equalTo("value1"))
+                // Сопоставление заголовков: например, заголовок "X-Request-Header" должен содержать строку, удовлетворяющую регулярному выражению
+                .withHeader("X-Request-Header", matching("HeaderValue-.*"))
+                // Сопоставление cookies: cookie с именем "sessionId" должна иметь значение "abc123"
+                .withCookie("sessionId", equalTo("abc123"))
+                // Аутентификация: базовая авторизация с заданными логином и паролем
+                .withBasicAuth("admin", "secret")
+                // Сопоставление тела запроса: например, JSON, в котором по пути $.data.id ожидается значение "12345"
+                .withRequestBody(matchingJsonPath("$.data.id", equalTo("12345")))
+                // --------------------------
+                // Определение ответа (response definition):
+                // --------------------------
+                .willReturn(aResponse()
+                        // HTTP статус ответа – например, 201 (Created)
+                        .withStatus(201)
+                        // Текстовое сообщение статуса (не всегда используется, но может быть полезно)
+                        .withStatusMessage("Created")
+                        // Заголовки ответа
+                        .withHeader("Content-Type", "application/json")
+                        .withHeader("X-Response-Header", "SomeValue")
+                        // Тело ответа можно задать напрямую – здесь возвращается JSON-строка
+                        .withBody("{ \"result\": \"success\", \"message\": \"Resource created successfully\" }")
+                        // Альтернативно, можно задать тело из файла:
+                        // .withBodyFile("response.json")
+                        // Задержка перед отправкой ответа (в миллисекундах) для имитации сетевой задержки
+                        .withFixedDelay(500)
+                        // Если требуется динамическая трансформация ответа, можно указать трансформеры
+                        .withTransformers("response-template")
+                        // Передача параметров в трансформер (например, для вставки динамических значений)
+                        .withTransformerParameter("timestamp", "2025-06-05T14:15:00Z")
+                )
+        );
+
+ /*
+curl -X POST "http://localhost:8181/complex/endpoint?queryParam1=value1&param2=123" \
+  -H "Content-Type: application/json" \
+  -H "X-Request-Header: HeaderValue-Test" \
+  -u admin:secret \
+  --cookie "sessionId=abc123" \
+  -d '{"data":{"id":12345}}'
+*/
+
+    }
+
+    @Test
+    public void jsonMinStub() throws IOException, InterruptedException {
 
         // Initialize HttpClient
         HttpClient client = HttpClient.newHttpClient();
         // Base URL for the API
         String baseUrl = "http://localhost:8181";
-        String pathURL = "/some/thingv2";
+        String pathURL = "/some/json";
+
+        // Регистрируем заглушку: для GET-запроса на URL "/some/thing"
+        // вернём ответ с заголовком "Content-Type: text/plain" и телом "Hello world!".
+        stubFor(get(urlEqualTo(pathURL))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withBody( "  {\n" +
+                                "    \"description\": \"Summarize Q4 performance metrics\",\n" +
+                                "    \"done\": false,\n" +
+                                "    \"id\": 3,\n" +
+                                "    \"title\": \"Finish project report\"\n" +
+                                "  }" )));
+
+
+        // Create the HTTP GET request using the path parameter
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(baseUrl + pathURL))
+                .GET()
+                .build();
+
+
+        // Send the request and get the response
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() == 200) { // Вариант для одного объекта
+            Gson gson = new Gson();
+            Todo todo = gson.fromJson(response.body(), Todo.class);
+
+            // Print all details of the todo item
+
+            System.out.println("ID: " + todo.id);
+            System.out.println("Title: " + todo.title);
+            System.out.println("Description: " + todo.description);
+            System.out.println("Done: " + todo.done);}
+
+        else {
+
+            System.out.printf("\nUnexpected Status Code: %d%n", response.statusCode());
+            var error = JsonParser.parseString(response.body()).getAsJsonObject();
+            System.out.println("Error Details: " + error);
+
+        }
+
+    }
+
+    @Test
+    public void jsonArrayMinStub() throws IOException, InterruptedException {
+
+        // Initialize HttpClient
+        HttpClient client = HttpClient.newHttpClient();
+        // Base URL for the API
+        String baseUrl = "http://localhost:8181";
+        String pathURL = "/some/jsonarray";
 
         // Регистрируем заглушку: для GET-запроса на URL "/some/thing"
         // вернём ответ с заголовком "Content-Type: text/plain" и телом "Hello world!".
@@ -167,19 +213,6 @@ curl -X POST "http://localhost:8181/complex/endpoint?queryParam1=value1&param2=1
                 System.out.println("Description: " + todo.description);
                 System.out.println("Done: " + todo.done);
             }}
-        /*
-            // Вариант для одного объекта
-            Gson gson = new Gson();
-            Todo todo = gson.fromJson(response.body(), Todo.class);
-
-            // Print all details of the todo item
-
-                System.out.println("ID: " + todo.id);
-                System.out.println("Title: " + todo.title);
-                System.out.println("Description: " + todo.description);
-                System.out.println("Done: " + todo.done);}
-
-        */
         else {
 
                 System.out.printf("\nUnexpected Status Code: %d%n", response.statusCode());
