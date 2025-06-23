@@ -53,7 +53,7 @@ sudo docker run -it --rm   -p 8443:8443   --name wiremock   wiremock:v1.4   --ht
 
 &nbsp;По умолчанию порты не пробрасываются !!!
 
-![790e6129548c935719a231e9db08a1f1.png](../blob/_resources/790e6129548c935719a231e9db08a1f1.png)
+![790e6129548c935719a231e9db08a1f1.png](blob/_resources/790e6129548c935719a231e9db08a1f1.png)
 
 Дополнительно можно пробрасывать и прочии параметры вызова
 
@@ -61,13 +61,13 @@ sudo docker run -it --rm   -p 8443:8443   --name wiremock   wiremock:v1.4   --ht
 
 6\. Идем в Postman и проверяем что все поднялось
 
-![f2b3415a382fe5341aa0d85bf32d2b49.png](../blob/_resources/f2b3415a382fe5341aa0d85bf32d2b49.png)
+![f2b3415a382fe5341aa0d85bf32d2b49.png](blob/_resources/f2b3415a382fe5341aa0d85bf32d2b49.png)
 
 7\. Проверяем нашу заглушку
 
-![56a505053052e595c11df3d56e8e6416.png](../blob/_resources/56a505053052e595c11df3d56e8e6416.png)
+![56a505053052e595c11df3d56e8e6416.png](blob/_resources/56a505053052e595c11df3d56e8e6416.png)
 
-![3beb87b9a037aaee2cfbc141b35c91cd.png](../blob/_resources/3beb87b9a037aaee2cfbc141b35c91cd.png)
+![3beb87b9a037aaee2cfbc141b35c91cd.png](blob/_resources/3beb87b9a037aaee2cfbc141b35c91cd.png)
 
 8\. Если вдруг надо добавить еще заглушку - то вариант 1  - пересобрать все начиная с шага 2 - и это тогда будет на постоянной основе - декларативный вариант
 
@@ -96,13 +96,13 @@ sudo docker run -it --rm   -p 8443:8443   --name wiremock   wiremock:v1.4   --ht
 
 ## https://wiremock.org/docs/standalone/admin-api-reference/
 
-![2064643e2ec915ca0d20b97069ff24b4.png](../blob/_resources/2064643e2ec915ca0d20b97069ff24b4.png)
+![2064643e2ec915ca0d20b97069ff24b4.png](blob/_resources/2064643e2ec915ca0d20b97069ff24b4.png)
 
 9\. Также можно императивно править и удалять созданные заглушки
 
 10\. Возврат пришедшего параметра в теле ответа
 
-![6a83341e77857b27346f194d16983df6.png](../blob/_resources/6a83341e77857b27346f194d16983df6.png)
+![6a83341e77857b27346f194d16983df6.png](blob/_resources/6a83341e77857b27346f194d16983df6.png)
 
 ```json
 {
@@ -156,6 +156,4 @@ curl -k -X POST "https://localhost:8443/__admin/mappings" -H "Content-Type: appl
 https://localhost:8443/__admin/requests
 ```
 
-  
-
-![0eefccae1cd99eca1be62cc218738c94.png](../_resources/0eefccae1cd99eca1be62cc218738c94.png)
+![0eefccae1cd99eca1be62cc218738c94.png](blob/_resources/0eefccae1cd99eca1be62cc218738c94.png)
