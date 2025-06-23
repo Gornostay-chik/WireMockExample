@@ -1,9 +1,22 @@
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.JsonParser;
 import io.restassured.RestAssured;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.io.IOException;
+
+import java.lang.reflect.Type;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.URI;
+import java.util.List;
 
 public class WireMockTestNGExternalExample {
 
@@ -104,4 +117,77 @@ curl -X POST "http://localhost:8181/complex/endpoint?queryParam1=value1&param2=1
         Assert.assertEquals(statusValid, 200, "Успешный запрос должен вернуть статус 200");
         Assert.assertEquals(statusInvalid, 404, "Невалидный запрос должен вернуть статус 404");
     }
+
+    @Test
+    public void exactUrlOnlyTestNGv2() throws IOException, InterruptedException {
+
+        // Initialize HttpClient
+        HttpClient client = HttpClient.newHttpClient();
+        // Base URL for the API
+        String baseUrl = "http://localhost:8181";
+        String pathURL = "/some/thingv2";
+
+        // Регистрируем заглушку: для GET-запроса на URL "/some/thing"
+        // вернём ответ с заголовком "Content-Type: text/plain" и телом "Hello world!".
+        stubFor(get(urlEqualTo(pathURL))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("[\n" +
+                                "  {\n" +
+                                "    \"description\": \"Summarize Q4 performance metrics\",\n" +
+                                "    \"done\": false,\n" +
+                                "    \"id\": 3,\n" +
+                                "    \"title\": \"Finish project report\"\n" +
+                                "  }\n" +
+                                "]")));
+
+
+        // Create the HTTP GET request using the path parameter
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(baseUrl + pathURL))
+                .GET()
+                .build();
+
+
+        // Send the request and get the response
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() == 200) { //Вариант для массива объектов
+            Gson gson = new Gson();
+
+            // Type token is only used for generic types, such as Lists
+            Type todoListType = new TypeToken<List<Todo>>() {}.getType();
+            List<Todo> todos = gson.fromJson(response.body(), todoListType);
+
+            System.out.println("Todos retrieved successfully:");
+            for (Todo todo : todos) {
+                System.out.println("Title: " + todo.title);
+                System.out.println("Description: " + todo.description);
+                System.out.println("Done: " + todo.done);
+            }}
+        /*
+            // Вариант для одного объекта
+            Gson gson = new Gson();
+            Todo todo = gson.fromJson(response.body(), Todo.class);
+
+            // Print all details of the todo item
+
+                System.out.println("ID: " + todo.id);
+                System.out.println("Title: " + todo.title);
+                System.out.println("Description: " + todo.description);
+                System.out.println("Done: " + todo.done);}
+
+        */
+        else {
+
+                System.out.printf("\nUnexpected Status Code: %d%n", response.statusCode());
+                var error = JsonParser.parseString(response.body()).getAsJsonObject();
+                System.out.println("Error Details: " + error);
+
+            }
+
+    }
+
 }
