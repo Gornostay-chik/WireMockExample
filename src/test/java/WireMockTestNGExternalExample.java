@@ -41,9 +41,10 @@ public class WireMockTestNGExternalExample {
     }
 
     @Test
-    public void textMinStub() {
+    public void textGetMinStub() {
         // Регистрируем заглушку: для GET-запроса на URL "/some/thing"
         // вернём ответ с заголовком "Content-Type: text/plain" и телом "Hello world!".
+        // https://wiremock.org/docs/standalone/admin-api-reference/
         stubFor(get(urlEqualTo("/some/thing"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "text/plain")
@@ -80,6 +81,8 @@ public class WireMockTestNGExternalExample {
 
          */
 
+
+        // /__admin/mappings
 
         stubFor(post(urlPathEqualTo("/complex/endpoint"))
                 // --------------------------
@@ -122,6 +125,8 @@ public class WireMockTestNGExternalExample {
         );
 
  /*
+ Example for CURL
+
 curl -X POST "http://localhost:8181/complex/endpoint?queryParam1=value1&param2=123" \
   -H "Content-Type: application/json" \
   -H "X-Request-Header: HeaderValue-Test" \
@@ -133,7 +138,7 @@ curl -X POST "http://localhost:8181/complex/endpoint?queryParam1=value1&param2=1
     }
 
     @Test
-    public void jsonMinStub() throws IOException, InterruptedException {
+    public void jsonGetMinStub() throws IOException, InterruptedException {
 
         // Initialize HttpClient
         HttpClient client = HttpClient.newHttpClient();
@@ -185,7 +190,7 @@ curl -X POST "http://localhost:8181/complex/endpoint?queryParam1=value1&param2=1
     }
 
     @Test
-    public void jsonArrayMinStub() throws IOException, InterruptedException {
+    public void jsonGetArrayMinStub() throws IOException, InterruptedException {
 
         // Initialize HttpClient
         HttpClient client = HttpClient.newHttpClient();

@@ -31,7 +31,7 @@ public class WireMockTestNGOfficialExample {
     }
 
     @Test
-    public void textMinStub() {
+    public void textGetMinStub() {
         // Настраиваем заглушку: для GET-запроса по адресу "/some/thing" вернуть "Hello world!"
         stubFor(get(urlEqualTo("/some/thing"))
                 .willReturn(aResponse()
