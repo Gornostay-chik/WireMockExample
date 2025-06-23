@@ -53,7 +53,7 @@ sudo docker run -it --rm   -p 8443:8443   --name wiremock   wiremock:v1.4   --ht
 
 &nbsp;По умолчанию порты не пробрасываются !!!
 
-![790e6129548c935719a231e9db08a1f1.png](../_resources/790e6129548c935719a231e9db08a1f1.png)
+![790e6129548c935719a231e9db08a1f1.png](../blob/_resources/790e6129548c935719a231e9db08a1f1.png)
 
 Дополнительно можно пробрасывать и прочии параметры вызова
 
