@@ -20,11 +20,15 @@ import java.util.List;
 
 public class WireMockTestNGExternalExample {
 
+    static String host = "localhost";
+    static int port = 8181;
+    static String baseUrl = "http://"+host+":"+port;
+
     // Предполагается, что WireMock уже запущен на localhost:8181
     @BeforeClass
     public void setUp() {
         // Настраиваем клиент WireMock для подключения к уже запущенному серверу
-        configureFor("localhost", 8181);
+        configureFor(host, port);
     }
 
     @AfterMethod
@@ -45,8 +49,8 @@ public class WireMockTestNGExternalExample {
                         .withBody("Hello world!")));
 
         // Отправляем запросы через RestAssured на уже запущенный WireMock-сервер.
-        int statusValid = RestAssured.get("http://localhost:8181/some/thing").getStatusCode();
-        int statusInvalid = RestAssured.get("http://localhost:8181/some/thing/else").getStatusCode();
+        int statusValid = RestAssured.get(baseUrl+"/some/thing").getStatusCode();
+        int statusInvalid = RestAssured.get(baseUrl+"/some/thing/else").getStatusCode();
 
         // Проверяем: для корректного URL статус должен быть 200, для неправильного – 404
         Assert.assertEquals(statusValid, 200, "Успешный запрос должен вернуть статус 200");
@@ -55,7 +59,25 @@ public class WireMockTestNGExternalExample {
 
     @Test
 
-    public void jsonMaxStub () {
+    public void jsonPostMaxStub () {
+
+        /*
+
+        Key Differences Between GET and POST
+
+    GET Requests:
+        Purpose: Retrieve data from a server.
+        Data Location: Data is sent in the URL as path or query parameters.
+        Success Status: Expect a 200 status code for successful data retrieval.
+
+    POST Requests:
+        Purpose: Send data to a server to create or update a resource, such as submitting a form, uploading a file, or adding a new item to a database.
+        Data Location: Data is sent in the request body.
+        Success Status: Expect a 201 status code for successful resource creation.
+
+         These differences clarify when to use each method. POST requests, in particular, require careful handling of the request body.
+
+         */
 
 
         stubFor(post(urlPathEqualTo("/complex/endpoint"))
@@ -114,8 +136,7 @@ curl -X POST "http://localhost:8181/complex/endpoint?queryParam1=value1&param2=1
 
         // Initialize HttpClient
         HttpClient client = HttpClient.newHttpClient();
-        // Base URL for the API
-        String baseUrl = "http://localhost:8181";
+
         String pathURL = "/some/json";
 
         // Регистрируем заглушку: для GET-запроса на URL "/some/thing"
@@ -170,7 +191,6 @@ curl -X POST "http://localhost:8181/complex/endpoint?queryParam1=value1&param2=1
         // Initialize HttpClient
         HttpClient client = HttpClient.newHttpClient();
         // Base URL for the API
-        String baseUrl = "http://localhost:8181";
         String pathURL = "/some/jsonarray";
 
         // Регистрируем заглушку: для GET-запроса на URL "/some/thing"
