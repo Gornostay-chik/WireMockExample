@@ -8,7 +8,7 @@ The WireMock server can be run in its own process, and configured via the Java A
 
 Once you have [downloaded the standalone JAR](https://wiremock.org/docs/download-and-installation/) you can run it simply by doing this:
 
-```
+``` bash
 $ java -jar wiremock-standalone-3.12.1.jar
 ```
 
@@ -159,7 +159,7 @@ Note: introduced in [3.0.0-beta-8](https://github.com/wiremock/wiremock/releases
 
 The WireMock Java API can be used against a running server on a different host if required. If you’re only planning to configure a single remote instance from within your program you can configure the static DSL to point to it:
 
-```
+``` java
 WireMock.configureFor("my.remote.host", 8000);
 
 // or for HTTPS
@@ -168,7 +168,7 @@ WireMock.configureFor("https", "my.remote.host", 8443);
 
 Alternatively you can create an instance of the client (or as many as there are servers to configure):
 
-```
+``` java
 WireMock wireMock1 = new WireMock("1st.remote.host", 8000);
 WireMock wireMock2 = new WireMock("https", "2nd.remote.host", 8001);
 ```
@@ -177,7 +177,7 @@ WireMock wireMock2 = new WireMock("https", "2nd.remote.host", 8001);
 
 You can create a stub mapping by posting to WireMock’s HTTP API:
 
-```
+``` bash
 $ curl -X POST \
 --data '{ "request": { "url": "/get/this", "method": "GET" }, "response": { "status": 200, "body": "Here it is!\n" }}' \
 http://localhost:8080/__admin/mappings
@@ -185,7 +185,7 @@ http://localhost:8080/__admin/mappings
 
 And then fetch it back:
 
-```
+``` bash
 $ curl http://localhost:8080/get/this
 Here it is!
 ```
@@ -198,7 +198,7 @@ You can also use the JSON API via files. When the WireMock server starts it crea
 
 To create a stub like the one above by this method, drop a file with a `.json` extension under `mappings` with the following content:
 
-```
+``` json
 {
     "request": {
         "method": "GET",
@@ -213,7 +213,7 @@ To create a stub like the one above by this method, drop a file with a `.json` e
 
 After restarting the server you should be able to do this:
 
-```
+``` bash
 $ curl http://localhost:8080/api/mytest
 More content
 ```
@@ -224,7 +224,7 @@ See [stubbing](https://wiremock.org/docs/stubbing/) and [verifying](https://wire
 
 JSON files containing multiple stub mappings can also be used. These are of the form:
 
-```
+``` json
 {
     "mappings": [
         {
@@ -257,7 +257,7 @@ JSON files containing multiple stub mappings can also be used. These are of the 
 
 You can push a collection of stub mappings and associated files to a remote WireMock or WireMock Cloud instance via the Java API as follows:
 
-```
+``` java
 WireMock wireMock = WireMock.create()
     .scheme("http")
     .host("my-wiremock.example.com")
@@ -278,7 +278,7 @@ If you want to package your stubs into the standalone JAR, so you can distribute
 
 For example, let’s say have the following directory structure:
 
-```
+``` bash
 src/main/resources
 src/main/resources/wiremock-stuff
 src/main/resources/wiremock-stuff/__files
@@ -287,7 +287,7 @@ src/main/resources/wiremock-stuff/mappings
 
 You could then run the packaged JAR as:
 
-```
+``` bash
 java -jar custom-wiremock.jar --load-resources-from-classpath wiremock-stuff
 ```
 
@@ -299,13 +299,13 @@ Note that it is not currently possible to load from the root of the classpath.
 
 You can start WireMock with the `--admin-api-basic-auth` command line option specifying your username and password in the standard `username:password` format:
 
-```
+``` bash
 java -jar wiremock-standalone.jar --admin-api-basic-auth my-username:my-super-secret-password
 ```
 
 Any call made to the admin API after that will need the correct `Authorization` header included or a `401` will be returned. The correct call will have the `Authorization` header with the word `Basic` followed by the Base64 representation of your `username:password` pair:
 
-```
+``` bash
 curl -X GET --location "http://localhost:8080/__admin/requests" \
     -H "Authorization: Basic bXktdXNlcm5hbWU6bXktc3VwZXItc2VjcmV0LXBhc3N3b3Jk"
 ```

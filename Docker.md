@@ -10,7 +10,7 @@ From version 2.31.0 WireMock has an [official Docker image](https://hub.docker.c
 
 ### Start a single WireWock container with default configuration[](https://wiremock.org/docs/standalone/docker/#start-a-single-wirewock-container-with-default-configuration)
 
-```
+``` yaml
 docker run -it --rm \
   -p 8080:8080 \
   --name wiremock \
@@ -23,7 +23,7 @@ docker run -it --rm \
 
 The Docker image supports exactly the same set of command line arguments as the [standalone version](https://wiremock.org/docs/standalone/java-jar#command-line-options). These can be passed to the container by appending them to the end of the command e.g.:
 
-```
+``` yaml
 docker run -it --rm \
   -p 8443:8443 \
   --name wiremock \
@@ -35,7 +35,7 @@ docker run -it --rm \
 
 Starting from `3.2.0-2`, the Docker image supports passing command line arguments [standalone version](https://wiremock.org/docs/standalone/java-jar#command-line-options) as the environment variable. Environment variable `WIREMOCK_OPTIONS` can be passed to container consisting of all command line arguments e.g.:
 
-```
+``` yaml
 docker run -it --rm \
   -e WIREMOCK_OPTIONS='--https-port 8443 --verbose' \
   -p 8443:8443 \
@@ -49,7 +49,7 @@ Inside the container, the WireMock uses `/home/wiremock` as the root from which 
 
 To mount the current directory use `-v $PWD:/home/wiremock` e.g.:
 
-```
+``` yaml
 docker run -it --rm \
   -p 8080:8080 \
   --name wiremock \
@@ -65,7 +65,7 @@ For example, to use the [Webhooks extension](https://wiremock.org/docs/webhooks-
 
 Then when starting Docker we would mount the extensions directory to `/var/wiremock/extensions` and enable the webhooks extension via a CLI parameter:
 
-```
+``` yaml
 docker run -it --rm \
   -p 8080:8080 \
   --name wiremock \
@@ -80,7 +80,7 @@ Inside the container, the WireMock uses `/home/wiremock` as the root from which 
 
 Wiremock utilizes a custom entrypoint script that passes all provided arguments as WireMock startup parameters. To modify the WireMock launch parameters it is recommended to override the entrypoint in your custom Docker image.
 
-```
+``` yaml
 # Sample Dockerfile
 FROM wiremock/wiremock:latest
 COPY wiremock /home/wiremock
@@ -91,7 +91,7 @@ ENTRYPOINT ["/docker-entrypoint.sh", "--global-response-templating", "--disable-
 
 Configuration in compose file is similar to Dockerfile definition
 
-```
+``` yaml
 # Sample compose file
 version: "3"
 services:
@@ -103,7 +103,7 @@ services:
 
 You can also mount your local `__files` and `mappings` files into the container e.g:
 
-```
+``` yaml
 # Sample compose file
 version: "3"
 services:
