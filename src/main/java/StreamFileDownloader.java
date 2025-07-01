@@ -7,8 +7,26 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.nio.file.Files;
+import java.util.stream.Stream;
 
 public class StreamFileDownloader {
+
+    private static HttpRequest.BodyPublisher ofMimeMultipartData(Path filePath) throws IOException {
+        var byteArrays = List.of(
+                "--boundary\r\n".getBytes(),
+                "Content-Disposition: form-data; name=\"file\"; filename=\"".getBytes(),
+                filePath.getFileName().toString().getBytes(),
+                "\"\r\nContent-Type: text/plain\r\n\r\n".getBytes(),
+                Files.readAllBytes(filePath),
+                "\r\n--boundary--\r\n".getBytes());
+
+
+
+        return HttpRequest.BodyPublishers.ofByteArrays(byteArrays);
+    }
+
     public static void main(String[] args) {
         String baseUrl = "https://raw.githubusercontent.com/SeleniumHQ/selenium/refs/heads/trunk/javascript/selenium-webdriver/";
         String noteName = "CHANGES.md";

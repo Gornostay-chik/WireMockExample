@@ -18,6 +18,8 @@ import java.net.http.HttpResponse;
 import java.net.URI;
 import java.util.List;
 
+import com.google.gson.JsonObject;
+
 public class WireMockTestNGExternalExample {
 
     static String host = "localhost";
@@ -63,6 +65,9 @@ public class WireMockTestNGExternalExample {
 
     public void jsonPostMaxStub () {
 
+        String apiKey = "\"my-secret-key\"";
+        String testUrl = "/complex/endpoint";
+
         /*
 
         Key Differences Between GET and POST
@@ -84,7 +89,11 @@ public class WireMockTestNGExternalExample {
 
         // /__admin/mappings
 
-        stubFor(post(urlPathEqualTo("/complex/endpoint"))
+        JsonObject resultData = new JsonObject();
+        resultData.addProperty("result", "success");
+        resultData.addProperty("message", "Resource created successfully");
+
+        stubFor(post(urlPathEqualTo(testUrl))
                 // --------------------------
                 // Условия сопоставления запроса (request matching):
                 // --------------------------
@@ -97,7 +106,8 @@ public class WireMockTestNGExternalExample {
                 // Сопоставление cookies: cookie с именем "sessionId" должна иметь значение "abc123"
                 .withCookie("sessionId", equalTo("abc123"))
                 // Аутентификация: базовая авторизация с заданными логином и паролем
-                .withBasicAuth("admin", "secret")
+                //.withBasicAuth("admin", "secret")
+                .withHeader("X-API-KEY", equalTo(apiKey))
                 // Сопоставление тела запроса: например, JSON, в котором по пути $.data.id ожидается значение "12345"
                 .withRequestBody(matchingJsonPath("$.data.id", equalTo("12345")))
                 // --------------------------
@@ -112,7 +122,7 @@ public class WireMockTestNGExternalExample {
                         .withHeader("Content-Type", "application/json")
                         .withHeader("X-Response-Header", "SomeValue")
                         // Тело ответа можно задать напрямую – здесь возвращается JSON-строка
-                        .withBody("{ \"result\": \"success\", \"message\": \"Resource created successfully\" }")
+                        .withBody(resultData.toString())
                         // Альтернативно, можно задать тело из файла:
                         // .withBodyFile("response.json")
                         // Задержка перед отправкой ответа (в миллисекундах) для имитации сетевой задержки
@@ -123,6 +133,52 @@ public class WireMockTestNGExternalExample {
                         .withTransformerParameter("timestamp", "2025-06-05T14:15:00Z")
                 )
         );
+
+
+        HttpClient client = HttpClient.newHttpClient();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(baseUrl + testUrl + "?queryParam1=value1&param2=123"))
+                .header("X-Request-Header", "HeaderValue-Test")
+                .header("X-API-Key", apiKey)
+                .header("Content-Type", "application/json")
+                .header("Cookie", "sessionId=abc123")
+                .POST(HttpRequest.BodyPublishers.ofString("{\"data\":{\"id\":12345}}") )
+                .build();
+
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() == 201) {
+                System.out.println("Accessed protected endpoint successfully!");
+                // Assuming response is JSON
+                System.out.println(response.body());
+
+             /*   Gson gson = new Gson();
+                Type resultListType = new TypeToken<List<Result>>() {}.getType();
+                List<Result> results = gson.fromJson(response.body(), resultListType);
+
+                for (Result res : results) {
+                    System.out.println(res);
+                }
+            */
+
+                Gson gson = new Gson();
+                Result result = gson.fromJson(response.body(), Result.class);
+
+                // Print all details of the todo item
+
+                System.out.println("Result: " + result.result);
+                System.out.println("Message: " + result.message);
+
+            } else {
+                System.out.println("An HTTP error occurred: " + response.statusCode());
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
  /*
  Example for CURL
