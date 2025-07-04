@@ -65,8 +65,6 @@ public class WireMockTestNGExternalExample {
         // sudo docker run -it --rm   -p 8181:8080   --name wiremock   wiremock/wiremock:3.13.0
         configureFor(host, port);
 
-        client = HttpClient.newHttpClient();
-
     }
 
     @BeforeMethod
