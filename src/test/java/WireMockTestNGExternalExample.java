@@ -7,6 +7,7 @@ import io.restassured.RestAssured;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -22,9 +23,40 @@ import com.google.gson.JsonObject;
 
 public class WireMockTestNGExternalExample {
 
+    /*
+    @BeforeSuite
+    @BeforeTest
+    @BeforeGroups
+    @BeforeClass
+    @BeforeMethod
+    @Test
+    @AfterMethod
+    @AfterClass
+    @AfterGroups
+    @AfterTest
+    @AfterSuite
+
+    Описание этапов:
+
+    @BeforeSuite / @AfterSuite Выполняются один раз до/после всего набора тестов во всём фреймворке.
+
+    @BeforeTest / @AfterTest Выполняются до/после каждого <test> блока в  testng.xml
+    (группы классов).
+
+    @BeforeGroups / @AfterGroups Запускаются перед/после всех @Test-методов, отнесённых к указанной группе.
+
+    @BeforeClass / @AfterClass Выполняются один раз до/после всех тестовых методов в текущем классе.
+
+    @BeforeMethod / @AfterMethod Выполняются перед/после каждого @Test-метода в классе.
+
+    @Test Сам тестовый метод.
+     */
+
     static String host = "localhost";
     static int port = 8181;
     static String baseUrl = "http://"+host+":"+port;
+    private HttpClient client;
+    private Gson gson;
 
     // Предполагается, что WireMock уже запущен на localhost:8181
     @BeforeClass
@@ -32,6 +64,15 @@ public class WireMockTestNGExternalExample {
         // Настраиваем клиент WireMock для подключения к уже запущенному серверу
         // sudo docker run -it --rm   -p 8181:8080   --name wiremock   wiremock/wiremock:3.13.0
         configureFor(host, port);
+
+        client = HttpClient.newHttpClient();
+
+    }
+
+    @BeforeMethod
+    public void setUpClient() {
+        client = HttpClient.newHttpClient();
+        gson = new Gson();
     }
 
     @AfterMethod
@@ -135,8 +176,6 @@ public class WireMockTestNGExternalExample {
         );
 
 
-        HttpClient client = HttpClient.newHttpClient();
-
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(baseUrl + testUrl + "?queryParam1=value1&param2=123"))
                 .header("X-Request-Header", "HeaderValue-Test")
@@ -163,7 +202,6 @@ public class WireMockTestNGExternalExample {
                 }
             */
 
-                Gson gson = new Gson();
                 Result result = gson.fromJson(response.body(), Result.class);
 
                 // Print all details of the todo item
@@ -196,9 +234,6 @@ curl -X POST "http://localhost:8181/complex/endpoint?queryParam1=value1&param2=1
     @Test
     public void jsonGetMinStub() throws IOException, InterruptedException {
 
-        // Initialize HttpClient
-        HttpClient client = HttpClient.newHttpClient();
-
         String pathURL = "/some/json";
 
         stubFor(get(urlEqualTo(pathURL))
@@ -225,7 +260,6 @@ curl -X POST "http://localhost:8181/complex/endpoint?queryParam1=value1&param2=1
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() == 200) { // Вариант для одного объекта
-            Gson gson = new Gson();
             Todo todo = gson.fromJson(response.body(), Todo.class);
 
             // Print all details of the todo item
@@ -248,8 +282,6 @@ curl -X POST "http://localhost:8181/complex/endpoint?queryParam1=value1&param2=1
     @Test
     public void jsonGetArrayMinStub() throws IOException, InterruptedException {
 
-        // Initialize HttpClient
-        HttpClient client = HttpClient.newHttpClient();
         // Base URL for the API
         String pathURL = "/some/jsonarray";
 
@@ -279,7 +311,6 @@ curl -X POST "http://localhost:8181/complex/endpoint?queryParam1=value1&param2=1
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() == 200) { //Вариант для массива объектов
-            Gson gson = new Gson();
 
             // Type token is only used for generic types, such as Lists
             Type todoListType = new TypeToken<List<Todo>>() {}.getType();
